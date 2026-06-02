@@ -1,0 +1,54 @@
+{
+  "en.1": {
+    "name": "英格兰超级联赛（英超）",
+    "season_default": "2025-26"
+  },
+  "en.2": {
+    "name": "英格兰冠军联赛（英冠）",
+    "season_default": "2025-26"
+  },
+  "de.1": {
+    "name": "德国超级联赛（德甲）",
+    "season_default": "2025-26"
+  },
+  "de.2": {
+    "name": "德国乙级联赛（德乙）",
+    "season_default": "2025-26"
+  },
+  "es.1": {
+    "name": "西班牙超级联赛（西甲）",
+    "season_default": "2025-26"
+  },
+  "es.2": {
+    "name": "西班牙乙级联赛（西乙）",
+    "season_default": "2025-26"
+  },
+  "it.1": {
+    "name": "意大利超级联赛（意甲）",
+    "season_default": "2025-26"
+  },
+  "it.2": {
+    "name": "意大利乙级联赛（意乙）",
+    "season_default": "2025-26"
+  },
+  "fr.1": {
+    "name": "法国超级联赛（法甲）",
+    "season_default": "2025-26"
+  },
+  "fr.2": {
+    "name": "法国乙级联赛（法乙）",
+    "season_default": "2025-26"
+  },
+  "au.1": {
+    "name": "澳大利亚超级联赛（澳超）",
+    "season_default": "2024-25"
+  },
+  "cn.1": {
+    "name": "中国超级联赛（中超）",
+    "season_default": "2025"
+  },
+  "jp.1": {
+    "name": "日本职业联赛（J联赛）",
+    "season_default": "2025"
+  }
+}

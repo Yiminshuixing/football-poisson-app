@@ -1,0 +1,216 @@
+/* 足彩泊松分析 - 移动端优化 */
+:root {
+  --pico-primary: #0d6efd;
+  --pico-primary-hover: #0b5ed7;
+  --pico-form-element-spacing-vertical: 0.5rem;
+}
+
+body {
+  font-size: 15px;
+  padding: 0.5rem;
+}
+
+main.container {
+  max-width: 720px;
+  padding: 0.5rem 1rem;
+}
+
+h1 { font-size: 1.6rem; margin-bottom: 0.3rem; }
+h3 { font-size: 1.15rem; margin-top: 1rem; margin-bottom: 0.5rem; }
+h4 { font-size: 1rem; margin-top: 0.8rem; margin-bottom: 0.4rem; }
+
+/* 联赛网格 */
+#leagueGrid, #seasonButtons {
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.league-btn, .season-btn {
+  margin: 0;
+  padding: 0.6rem 0.4rem;
+  font-size: 0.9rem;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid var(--pico-muted-border-color);
+  border-radius: 0.5rem;
+  background: var(--pico-card-background-color);
+  color: var(--pico-color);
+  transition: all 0.15s;
+}
+
+.league-btn:hover, .season-btn:hover,
+.league-btn:focus, .season-btn:focus {
+  border-color: var(--pico-primary);
+  background: var(--pico-primary-background);
+}
+
+.league-btn small, .season-btn small {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--pico-muted-color);
+}
+
+/* 结果展示 */
+.result-card {
+  background: var(--pico-card-background-color);
+  border: 1px solid var(--pico-muted-border-color);
+  border-radius: 0.6rem;
+  padding: 0.8rem;
+  margin-bottom: 0.6rem;
+}
+
+.result-card h5 {
+  margin: 0 0 0.4rem 0;
+  font-size: 0.95rem;
+  color: var(--pico-primary);
+}
+
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem 0;
+  font-size: 0.9rem;
+  border-bottom: 1px dashed var(--pico-muted-border-color);
+}
+.metric-row:last-child { border-bottom: none; }
+.metric-row .label { color: var(--pico-muted-color); }
+.metric-row .value { font-weight: 600; }
+
+.prob-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+  text-align: center;
+  margin: 0.5rem 0;
+}
+
+.prob-cell {
+  background: var(--pico-card-sectioning-background-color);
+  padding: 0.5rem 0.3rem;
+  border-radius: 0.4rem;
+}
+.prob-cell .pct {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--pico-primary);
+}
+.prob-cell .lbl {
+  font-size: 0.75rem;
+  color: var(--pico-muted-color);
+}
+
+.value-badge {
+  display: inline-block;
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: 0.3rem;
+}
+.value-good { background: #d1e7dd; color: #0a3622; }
+.value-strong { background: #198754; color: white; }
+.value-bad { background: #f8d7da; color: #58151c; }
+
+.recent-list {
+  font-size: 0.78rem;
+  margin: 0.4rem 0;
+  padding: 0;
+  list-style: none;
+}
+.recent-list li {
+  padding: 0.2rem 0;
+  border-bottom: 1px dotted var(--pico-muted-border-color);
+  display: flex;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+.recent-list .date { color: var(--pico-muted-color); min-width: 4.5em; }
+.recent-list .opponent { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.recent-list .score { font-weight: 600; min-width: 3em; text-align: right; }
+.recent-list .w { color: #198754; }
+.recent-list .d { color: #ffc107; }
+.recent-list .l { color: #dc3545; }
+
+.score-matrix {
+  font-family: monospace;
+  font-size: 0.75rem;
+  margin: 0.5rem 0;
+  overflow-x: auto;
+}
+.score-matrix table {
+  border-collapse: collapse;
+  margin: 0 auto;
+}
+.score-matrix th, .score-matrix td {
+  padding: 0.2rem 0.4rem;
+  text-align: center;
+  border: 1px solid var(--pico-muted-border-color);
+  min-width: 2.4em;
+}
+.score-matrix th { background: var(--pico-card-sectioning-background-color); }
+.score-matrix td.hot { background: #fff3cd; font-weight: 600; }
+
+.error-box {
+  background: #f8d7da;
+  color: #58151c;
+  padding: 0.6rem;
+  border-radius: 0.4rem;
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.info-box {
+  background: #cff4fc;
+  color: #055160;
+  padding: 0.5rem;
+  border-radius: 0.4rem;
+  font-size: 0.85rem;
+  margin: 0.4rem 0;
+}
+
+.warn-box {
+  background: #fff3cd;
+  color: #664d03;
+  padding: 0.5rem;
+  border-radius: 0.4rem;
+  font-size: 0.85rem;
+  margin: 0.4rem 0;
+}
+
+/* 步骤切换动画 */
+section {
+  animation: fadeIn 0.25s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+button {
+  font-size: 0.95rem;
+  padding: 0.5rem 0.8rem;
+}
+
+input, select {
+  font-size: 0.95rem !important;
+  padding: 0.5rem !important;
+}
+
+footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--pico-muted-border-color);
+  font-size: 0.75rem;
+  color: var(--pico-muted-color);
+}
+footer a { color: var(--pico-muted-color); text-decoration: underline; }
+
+@media (max-width: 480px) {
+  body { font-size: 14px; }
+  h1 { font-size: 1.4rem; }
+  #leagueGrid, #seasonButtons {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

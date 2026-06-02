@@ -1,0 +1,27 @@
+{
+  "name": "足彩泊松分析",
+  "short_name": "足彩泊松",
+  "description": "基于泊松分布 + Kelly公式的足球比赛预测工具，13联赛支持，自动赔率",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0d6efd",
+  "orientation": "portrait",
+  "lang": "zh-CN",
+  "scope": "/football-poisson-app/",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["sports", "utilities"]
+}
