@@ -526,21 +526,13 @@ function initLeagueButtons() {
 
 function selectLeague(code) {
   state.selectedLeague = code;
-  const info = LEAGUE_INFO[code];
   const seasons = SEASONS_BY_LEAGUE[code] || [];
-  
-  const container = $('seasonButtons');
-  container.innerHTML = '';
-  
-  for (const s of seasons) {
-    const btn = document.createElement('button');
-    btn.className = 'season-btn';
-    btn.textContent = s + (s === info.season_default ? ' ★' : '');
-    btn.onclick = () => selectSeason(s);
-    container.appendChild(btn);
-  }
-  
-  show('step2');
+  // 自动选最近赛季（数据源总是用最新可用的）
+  state.selectedSeason = seasons[0] || '';
+  const label = $('currentSeasonLabel');
+  if (label) label.textContent = `· ${state.selectedSeason}赛季`;
+  show('step3');
+  loadTeams();
 }
 
 function selectSeason(season) {
@@ -854,7 +846,7 @@ function init() {
   initLeagueButtons();
   
   $('backToLeague').onclick = () => show('step1');
-  $('backToSeason').onclick = () => show('step2');
+  $('backToSeason').onclick = () => show('step1');
   $('homeTeam').onchange = onTeamChange;
   $('awayTeam').onchange = onTeamChange;
   $('analyzeBtn').onclick = onAnalyze;
