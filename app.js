@@ -517,10 +517,19 @@ function initLeagueButtons() {
     const fullName = info.name;
     const btn = document.createElement('button');
     btn.className = 'league-btn';
-    // 中文简称为主，下方显示代码（总是可见）
-    btn.innerHTML = `${abbr}<small>${code}</small>`;
+    btn.type = 'button';
     btn.title = fullName;
     btn.onclick = () => selectLeague(code);
+    // 中文简称（大字）
+    const mainText = document.createElement('span');
+    mainText.textContent = abbr;
+    mainText.style.cssText = 'display:block;font-size:1.1rem;font-weight:700;color:#1a1a1a;';
+    btn.appendChild(mainText);
+    // 代码（小字）
+    const subText = document.createElement('small');
+    subText.textContent = code;
+    subText.style.cssText = 'display:block;font-size:0.7rem;color:#6e7681;font-weight:400;margin-top:2px;';
+    btn.appendChild(subText);
     grid.appendChild(btn);
   }
 }
