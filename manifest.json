@@ -1,7 +1,7 @@
 {
   "name": "足彩泊松分析",
   "short_name": "足彩泊松",
-  "id": "/football-poisson-app/",
+  "id": "./",
   "description": "基于泊松分布+Kelly公式的足球比赛预测工具，支持13联赛自动赔率",
   "start_url": "./index.html",
   "scope": "./",
