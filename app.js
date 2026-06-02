@@ -511,9 +511,14 @@ function initLeagueButtons() {
   const grid = $('leagueGrid');
   grid.innerHTML = '';
   for (const [code, info] of Object.entries(LEAGUE_INFO)) {
+    // 提取括号里的中文简称（如 "中超"、"英超"）
+    const m = info.name.match(/（([^）]+)）/);
+    const abbr = m ? m[1] : info.name;
+    const fullName = info.name;
     const btn = document.createElement('button');
     btn.className = 'league-btn';
-    btn.innerHTML = `${info.name.split('（')[0]}<small>${code}</small>`;
+    btn.innerHTML = abbr;
+    btn.title = fullName;
     btn.onclick = () => selectLeague(code);
     grid.appendChild(btn);
   }
