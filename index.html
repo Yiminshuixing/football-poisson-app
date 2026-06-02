@@ -9,7 +9,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="icon.svg">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <link rel="stylesheet" href="pico.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -102,15 +102,6 @@
     </footer>
   </main>
 
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js', { scope: './' })
-          .then(reg => console.log('SW registered:', reg.scope))
-          .catch(err => console.warn('SW failed:', err));
-      });
-    }
-  </script>
   <script src="app.js"></script>
 </body>
 </html>
