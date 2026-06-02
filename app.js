@@ -273,8 +273,26 @@ function oddsToImplied(odds) {
   return odds > 0 ? 1 / odds : 0;
 }
 
-function calcValue(modelProb, impliedProb) {
-  return impliedProb > 0 ? modelProb / impliedProb : 0;
+function calcDeJuiced(odds) {
+  // 去水计算：赔率中包含博彩公司利润，原始 1/odds 之和 > 1
+  // 总隐含概率 = 1/主胜 + 1/平 + 1/客 （一般为 1.05-1.10）
+  // 抽水率 = 总隐含 - 1
+  // 去水真实概率 = 各原始隐含 / 总隐含
+  const impHome = oddsToImplied(odds.home);
+  const impDraw = oddsToImplied(odds.draw);
+  const impAway = oddsToImplied(odds.away);
+  const total = impHome + impDraw + impAway;
+  return {
+    home: total > 0 ? impHome / total : 0,
+    draw: total > 0 ? impDraw / total : 0,
+    away: total > 0 ? impAway / total : 0,
+    total,
+    margin: total - 1, // 抽水率 (例如 0.095 = 9.5%)
+  };
+}
+
+function calcValue(modelProb, refProb) {
+  return refProb > 0 ? modelProb / refProb : 0;
 }
 
 // ============ 球队实力 ============
@@ -433,12 +451,15 @@ async function runAnalysis(homeTeam, awayTeam, leagueCode, season, odds) {
   
   const kelly = {homeLam, awayLam};
   if (odds) {
+    const dj = calcDeJuiced(odds);
+    kelly.deJuiced = dj;
+    // 价值比较：模型 vs 去水后的真实概率
     kelly.kellyHome = kellyFraction(odds.home - 1, outcomes.homeWin);
-    kelly.valueHome = calcValue(outcomes.homeWin, oddsToImplied(odds.home));
+    kelly.valueHome = calcValue(outcomes.homeWin, dj.home);
     kelly.kellyDraw = kellyFraction(odds.draw - 1, outcomes.draw);
-    kelly.valueDraw = calcValue(outcomes.draw, oddsToImplied(odds.draw));
+    kelly.valueDraw = calcValue(outcomes.draw, dj.draw);
     kelly.kellyAway = kellyFraction(odds.away - 1, outcomes.awayWin);
-    kelly.valueAway = calcValue(outcomes.awayWin, oddsToImplied(odds.away));
+    kelly.valueAway = calcValue(outcomes.awayWin, dj.away);
   }
   
   return {homeName, awayName, homeS, awayS, outcomes, kelly, leagueAvg, odds, warnings, matrix, homeLam, awayLam};
@@ -738,34 +759,50 @@ function renderResult(r) {
   
   // 赔率与价值
   if (r.odds) {
+    const dj = r.kelly.deJuiced;
+    const marginPct = (dj.margin * 100).toFixed(1);
+    const marginColor = dj.margin > 0.10 ? '#dc3545' : (dj.margin > 0.07 ? '#ffc107' : '#198754');
+    
     html += `<div class="result-card">
-      <h5>🏦 赔率与价值</h5>`;
+      <h5>🏦 赔率与价值</h5>
+      <div class="info-box" style="margin-bottom:0.6rem">
+        🏷️ 庄家抽水率: <strong style="color:${marginColor}">${marginPct}%</strong>
+        <small style="color:#6e7681">（总隐含 ${dj.total.toFixed(4)}，越低越好，&lt;7% 较公平）</small>
+      </div>`;
     
     const oddsData = [
-      {label: '主胜', odds: r.odds.home, prob: r.outcomes.homeWin, value: r.kelly.valueHome, kelly: r.kelly.kellyHome},
-      {label: '平局', odds: r.odds.draw, prob: r.outcomes.draw, value: r.kelly.valueDraw, kelly: r.kelly.kellyDraw},
-      {label: '客胜', odds: r.odds.away, prob: r.outcomes.awayWin, value: r.kelly.valueAway, kelly: r.kelly.kellyAway},
+      {label: '主胜', odds: r.odds.home, prob: r.outcomes.homeWin, djProb: dj.home, value: r.kelly.valueHome, kelly: r.kelly.kellyHome},
+      {label: '平局', odds: r.odds.draw, prob: r.outcomes.draw, djProb: dj.draw, value: r.kelly.valueDraw, kelly: r.kelly.kellyDraw},
+      {label: '客胜', odds: r.odds.away, prob: r.outcomes.awayWin, djProb: dj.away, value: r.kelly.valueAway, kelly: r.kelly.kellyAway},
     ];
     
     for (const item of oddsData) {
-      const implied = oddsToImplied(item.odds);
       let valueTag = '';
-      if (item.value > 1.1) valueTag = '<span class="value-badge value-strong">✅ 高价值</span>';
+      if (item.value > 1.15) valueTag = '<span class="value-badge value-strong">✅ 高价值</span>';
       else if (item.value > 1.05) valueTag = '<span class="value-badge value-good">✅ 有价</span>';
-      else valueTag = '<span class="value-badge value-bad">❌</span>';
+      else if (item.value > 0.95) valueTag = '<span class="value-badge value-bad">— 合理</span>';
+      else valueTag = '<span class="value-badge value-bad">❌ 偏高</span>';
       
       const kellyTag = item.kelly > 0
-        ? `${(item.kelly * 100).toFixed(2)}% <small>🟢 可投</small>`
-        : '不投';
+        ? `${(item.kelly * 100).toFixed(2)}% <small>🟢</small>`
+        : `<small style="color:#999">不投</small>`;
       
-      html += `<div class="metric-row">
-        <span class="label">${item.label} @ ${item.odds.toFixed(2)}</span>
-        <span class="value">${valueTag} 模型${(item.prob * 100).toFixed(1)}% / 隐含${(implied * 100).toFixed(1)}% · 凯利 ${kellyTag}</span>
+      html += `<div class="metric-row" style="flex-direction:column;align-items:stretch;gap:0.25rem">
+        <div style="display:flex;justify-content:space-between">
+          <span class="label">${item.label} <strong>@ ${item.odds.toFixed(2)}</strong></span>
+          <span class="value">${valueTag}</span>
+        </div>
+        <div style="font-size:0.78rem;color:#6e7681;padding-left:0.5rem">
+          模型 <strong style="color:#1a1a1a">${(item.prob * 100).toFixed(1)}%</strong>
+          vs 去水真实 <strong style="color:#1a1a1a">${(item.djProb * 100).toFixed(1)}%</strong>
+          · 价值系数 <strong style="color:#1a1a1a">${item.value.toFixed(2)}</strong>
+          · 凯利 ${kellyTag}
+        </div>
       </div>`;
     }
     
     if (r.odds.time) {
-      html += `<div class="info-box">🕐 赔率截取于 ${r.odds.time}</div>`;
+      html += `<div class="info-box" style="margin-top:0.5rem;font-size:0.78rem">🕐 赔率截取于 ${r.odds.time}${r.odds.remaining ? ` · 剩余请求 ${r.odds.remaining}` : ''}</div>`;
     }
     html += `</div>`;
   }
