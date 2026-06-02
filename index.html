@@ -27,18 +27,9 @@
       <div id="leagueGrid" class="grid"></div>
     </section>
 
-    <!-- 步骤 2：选择赛季 (已隐藏，自动选最新) -->
-    <section id="step2" hidden>
-      <h3>② 选择赛季</h3>
-      <div id="seasonButtons" class="grid"></div>
-      <button class="secondary" id="backToLeague">← 返回选联赛</button>
-    </section>
-
-    <!-- 步骤 3：选择球队 -->
+    <!-- 步骤 2：选择球队（自动选最近赛季） -->
     <section id="step3" hidden>
-      <h3>③ 选择主客队 <small id="currentSeasonLabel" style="color:var(--pico-muted-color);font-weight:normal"></small></h3>
-    <section id="step3" hidden>
-      <h3>③ 选择主客队</h3>
+      <h3>② 选择主客队 <small id="currentSeasonLabel" style="color:var(--pico-muted-color);font-weight:normal"></small></h3>
       <div id="loadingTeams" aria-busy="true" hidden>加载球队列表...</div>
       <div class="grid">
         <div>
@@ -57,14 +48,14 @@
         </div>
       </div>
       <div class="grid">
-        <button class="secondary" id="backToSeason">← 返回选赛季</button>
+        <button class="secondary" id="backToLeague">← 返回选联赛</button>
         <button id="analyzeBtn" disabled>下一步：赔率 →</button>
       </div>
     </section>
 
-    <!-- 步骤 4：赔率 -->
+    <!-- 步骤 3：赔率 -->
     <section id="step4" hidden>
-      <h3>④ 赔率输入方式</h3>
+      <h3>③ 赔率输入方式</h3>
       <div class="grid">
         <button id="oddsAuto">① 自动拉取赔率</button>
         <button class="secondary" id="oddsManual">② 手动输入赔率</button>
@@ -88,7 +79,7 @@
       <button id="submitManualOdds">开始分析 →</button>
     </section>
 
-    <!-- 步骤 5：分析结果 -->
+    <!-- 步骤 4：分析结果 -->
     <section id="result" hidden>
       <h3>📊 分析结果</h3>
       <div id="resultContent"></div>

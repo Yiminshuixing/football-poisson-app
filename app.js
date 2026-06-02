@@ -517,7 +517,8 @@ function initLeagueButtons() {
     const fullName = info.name;
     const btn = document.createElement('button');
     btn.className = 'league-btn';
-    btn.innerHTML = abbr;
+    // 中文简称为主，下方显示代码（总是可见）
+    btn.innerHTML = `${abbr}<small>${code}</small>`;
     btn.title = fullName;
     btn.onclick = () => selectLeague(code);
     grid.appendChild(btn);
@@ -846,7 +847,6 @@ function init() {
   initLeagueButtons();
   
   $('backToLeague').onclick = () => show('step1');
-  $('backToSeason').onclick = () => show('step1');
   $('homeTeam').onchange = onTeamChange;
   $('awayTeam').onchange = onTeamChange;
   $('analyzeBtn').onclick = onAnalyze;
